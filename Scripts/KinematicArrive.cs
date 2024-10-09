@@ -16,7 +16,7 @@ public class KinematicArrive : MonoBehaviour
     void Start()
     {
         maxSpeed = 2f;
-        radius = 5f;
+        radius = 3f;
         character = gameObject.AddComponent<Static>();
         anim = GetComponent<Animator>();
     }

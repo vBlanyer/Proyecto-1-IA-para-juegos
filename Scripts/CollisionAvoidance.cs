@@ -7,16 +7,14 @@ public class CollisionAvoidance : MonoBehaviour
     public Kinematic character;
     public float maxAcceleration;
 
-    // A list of potential targets
     public Kinematic[] targets;
 
-    // The collision radius of the character (assuming all characters have the same radius here)
     public float radius;
 
     void Start()
     {
-        maxAcceleration = 1.0f;
-        radius = 1.0f;
+        maxAcceleration = 10.0f;
+        radius = 4.0f;
 
         // Asignar varios objetivos a la vez
         List<Kinematic> targetList = new List<Kinematic>();
@@ -36,6 +34,21 @@ public class CollisionAvoidance : MonoBehaviour
             }
         }
 
+        // Agregar el objeto con el tag "NpcTag"
+        GameObject[] npcs = GameObject.FindGameObjectsWithTag("NpcTag");
+        foreach (GameObject npc in npcs)
+        {
+            Kinematic npcKinematic = npc.GetComponent<Kinematic>();
+            if (npcKinematic != null)
+            {
+                targetList.Add(npcKinematic);
+            }
+            else
+            {
+                Debug.LogWarning($"Npc {npc.name} does not have a Kinematic component!");
+            }
+        }
+
         targets = targetList.ToArray();
         Debug.Log($"Total targets assigned: {targets.Length}");
         
@@ -49,10 +62,8 @@ public class CollisionAvoidance : MonoBehaviour
 
     private SteeringOutput GetSteering()
     {
-        // 1. Find the target that’s closest to collision. Store the first collision time.
         float shortestTime = Mathf.Infinity;
 
-        // Store the target that collides then, and other data that we will need and can avoid recalculating.
         Kinematic firstTarget = null;
         float firstMinSeparation = 0.0f;
         float firstDistance = 0.0f;
@@ -69,12 +80,11 @@ public class CollisionAvoidance : MonoBehaviour
         // Loop through each target
         for (int i = 0; i < targets.Length; i++)
         {
-            // Calculate the time to collision, ignoring the Y axis.
             relativePos = targets[i].position - character.position;
-            relativePos.y = 0;  // Ignore the Y axis
+            relativePos.y = 0; 
 
             relativeVel = targets[i].velocity - character.velocity;
-            relativeVel.y = 0;  // Ignore the Y axis
+            relativeVel.y = 0; 
 
             relativeSpeed = relativeVel.magnitude;
 
@@ -87,7 +97,6 @@ public class CollisionAvoidance : MonoBehaviour
 
             timeToCollision = Vector3.Dot(relativePos, relativeVel) / (relativeSpeed * relativeSpeed);
 
-            // Check if there will be a collision at all
             distance = relativePos.magnitude;
             minSeparation = distance - relativeSpeed * timeToCollision;
             if (minSeparation > 2 * radius)
@@ -96,10 +105,8 @@ public class CollisionAvoidance : MonoBehaviour
                 continue;
             }
 
-            // Check if it is the shortest collision time
             if (timeToCollision > 0 && timeToCollision < shortestTime)
             {
-                // Store the time, target, and other data
                 shortestTime = timeToCollision;
                 firstTarget = targets[i];
                 firstMinSeparation = minSeparation;
@@ -111,29 +118,24 @@ public class CollisionAvoidance : MonoBehaviour
             }
         }
 
-        // 2. Calculate the steering
-        // If we have no target, then exit
         if (firstTarget == null)
         {
             Debug.Log("No target found for collision avoidance.");
             return new SteeringOutput();
         }
 
-        // If we are going to hit exactly, or if we are already colliding, steer based on current position.
         if (firstMinSeparation <= 0 || firstDistance < 2 * radius)
         {
             relativePos = firstTarget.position - character.position;
-            relativePos.y = 0;  // Ignore the Y axis in relative position
+            relativePos.y = 0;  
             Debug.Log("Calculating avoidance based on current position.");
         }
         else
         {
-            // Otherwise, calculate the future relative position
             relativePos = firstRelativePos + firstRelativeVel * shortestTime;
             Debug.Log("Calculating avoidance based on future position.");
         }
 
-        // Avoid the target
         relativePos.Normalize();
 
         SteeringOutput result = new SteeringOutput

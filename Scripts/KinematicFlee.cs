@@ -16,7 +16,7 @@ public class KinematicFlee : MonoBehaviour
     void Start()
     {
         maxSpeed = 2f;
-        radius = 5f;
+        radius = 3f;
         anim = GetComponent<Animator>();
     }
 

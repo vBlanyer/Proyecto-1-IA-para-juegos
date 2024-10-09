@@ -37,7 +37,7 @@ public class Kinematic : Static
         // Calcular la magnitud de la velocidad
         speedMagnitude = velocity.magnitude;
 
-        // Calcular la magnitud de la aceleración
+        // Calcular la magnitud de la aceleracion
         Vector3 acceleration = (velocity - previousVelocity) / Time.deltaTime;
         accelerationMagnitude = acceleration.magnitude;
 

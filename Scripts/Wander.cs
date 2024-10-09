@@ -18,7 +18,7 @@ public class Wander : Face
         wanderRadius = 1.0f; 
         wanderRate = 0.4f; 
         wanderOrientation = 0.0f;
-        maxAcceleration = 1.0f;
+        maxAcceleration = 10.0f;
 
         if (faceTarget == null)
         {
@@ -60,7 +60,7 @@ public class Wander : Face
     {
         character.velocity += steering.linear * deltaTime;
 
-        float maxSpeed = 1.0f;
+        float maxSpeed = 2.0f;
         if (character.velocity.magnitude > maxSpeed)
         {
             character.velocity = character.velocity.normalized * maxSpeed;
