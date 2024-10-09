@@ -42,8 +42,7 @@ public class Seek : MonoBehaviour
     {
         // Actualizar la velocidad del personaje
         character.velocity += steering.linear * deltaTime;
-        // Limitar la velocidad a un valor máximo si es necesario.
-        float maxSpeed = 4.0f; // Define un valor máximo de velocidad, ajústalo según tu necesidad.
+        float maxSpeed = 4.0f; 
         if (character.velocity.magnitude > maxSpeed)
         {
             character.velocity = character.velocity.normalized * maxSpeed;
